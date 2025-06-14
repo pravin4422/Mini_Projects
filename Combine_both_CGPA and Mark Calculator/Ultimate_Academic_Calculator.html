@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎓Ultimate Academic Calculator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 30px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .main-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .main-tab-btn {
+            flex: 1;
+            padding: 20px;
+            background: none;
+            border: none;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-tab-btn::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+        }
+
+        .main-tab-btn:hover::before,
+        .main-tab-btn.active::before {
+            width: 100%;
+        }
+
+        .main-tab-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .main-tab-content {
+            display: none;
+            padding: 30px;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .main-tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Credit Calculator Styles */
+        .credit-tabs {
+            display: flex;
+            margin-bottom: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 5px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 15px;
+            background: none;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .paper {
+            background: white;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .paper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .paper:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-calculate {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, #ffc107, #e0a800);
+            color: white;
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+        }
+
+        .btn-pdf {
+            background: linear-gradient(135deg, #6f42c1, #5a32a3);
+            color: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .add-paper-btn {
+            background: linear-gradient(135deg, #17a2b8, #138496);
+            color: white;
+            padding: 15px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(23, 162, 184, 0.3);
+        }
+
+        .add-paper-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(23, 162, 184, 0.4);
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 15px;
+            font-weight: 600;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .result.pass {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .result.fail {
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        .status {
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            margin: 15px 0;
+        }
+
+        .status.pass {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .status.fail {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+        }
+
+        /* CGPA Calculator Styles */
+        .cgpa-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .cgpa-input-group {
+            display: flex;
+            gap: 15px;
+            align-items: end;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .cgpa-form {
+            display: grid;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .subject-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 15px;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .subject-row:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1);
+        }
+
+        .cgpa-result {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 18px;
+            margin-top: 20px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            background: linear-gradient(135deg, #28a745, #20c997);
+        }
+
+        .toast.error {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+        }
+
+        .toast.info {
+            background: linear-gradient(135deg, #17a2b8, #138496);
+        }
+
+        .error {
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+
+        /* Saved Results */
+        .saved-result {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #667eea;
+        }
+
+        .saved-date {
+            color: #6c757d;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .main-tabs {
+                flex-direction: column;
+            }
+
+            .subject-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .cgpa-input-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓Ultimate Academic Calculator</h1>
+            <p>Your complete solution for credit calculations and CGPA tracking</p>
+        </div>
+
+        <div class="main-tabs">
+            <button class="main-tab-btn active" onclick="switchMainTab('credit-calc')">
+                 Credit Calculator
+            </button>
+            <button class="main-tab-btn" onclick="switchMainTab('cgpa-calc')">
+                 CGPA Calculator
+            </button>
+        </div>
+
+        <!-- Credit Calculator Section -->
+        <div id="credit-calc" class="main-tab-content active">
+            <div class="credit-tabs">
+                <button class="tab-btn active" onclick="switchTab('credit-3')">3 Credits</button>
+                <button class="tab-btn" onclick="switchTab('credit-4')">4 Credits</button>
+                <button class="tab-btn" onclick="switchTab('credit-4-5')">4.5 Credits</button>
+                <button class="tab-btn" onclick="switchTab('saved')"> Saved Results</button>
+            </div>
+
+            <div id="credit-3" class="tab-content active">
+                <h3>3 Credit Papers</h3>
+                <p>Formula: Internal (A1×30% + A2×30% + Activity) + Theory×60%</p>
+                <div id="papers-3"></div>
+                <button class="add-paper-btn" onclick="addPaper('3')">➕ Add Another Paper</button>
+            </div>
+
+            <div id="credit-4" class="tab-content">
+                <h3>4 Credit Papers</h3>
+                <p>Formula: Internal (A1×40% + A2×40% + Activity + Lab) + Theory×25%</p>
+                <div id="papers-4"></div>
+                <button class="add-paper-btn" onclick="addPaper('4')">➕ Add Another Paper</button>
+            </div>
+
+            <div id="credit-4-5" class="tab-content">
+                <h3>4.5 Credit Papers</h3>
+                <p>Formula: Internal (A1×40% + A2×40% + Activity + Lab) + Theory×25%</p>
+                <div id="papers-4.5"></div>
+                <button class="add-paper-btn" onclick="addPaper('4.5')">➕ Add Another Paper</button>
+            </div>
+
+            <div id="saved" class="tab-content">
+                <h3> Saved Results</h3>
+                <div style="margin-bottom: 20px;">
+                    <button class="btn btn-delete" onclick="clearAllResults()">🗑️ Clear All Results</button>
+                </div>
+                <div id="saved-results"></div>
+            </div>
+        </div>
+
+        <!-- CGPA Calculator Section -->
+        <div id="cgpa-calc" class="main-tab-content">
+            <div class="cgpa-section">
+                <h3> CGPA Calculator (Letter Grades)</h3>
+                <p>Calculate your Cumulative Grade Point Average using letter grades</p>
+                
+                <div class="cgpa-input-group">
+                    <div class="form-group">
+                        <label for="num-subjects">Number of Subjects:</label>
+                        <input type="number" id="num-subjects" min="1" max="20" value="3" />
+                    </div>
+                    <button class="btn btn-calculate" id="generate-inputs">Generate Inputs</button>
+                </div>
+
+                <form id="subjects-form" class="cgpa-form"></form>
+
+                <button class="btn btn-calculate" id="calculate-cgpa" style="margin-top: 20px; width: 100%; padding: 15px;">
+                     Calculate CGPA
+                </button>
+
+                <div id="cgpa-result" class="cgpa-result" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <button class="fab" onclick="scrollToTop()">↑</button>
+
+    <script>
+        // In-memory storage for Claude.ai compatibility
+        let savedResults = [];
+
+        // Grade mapping for CGPA calculation
+        const gradeMap = {
+            'O': 10,
+            'A+': 9,
+            'A': 8,
+            'B+': 7,
+            'B': 6,
+            'C': 5,
+            'F': 0
+        };
+
+        // Storage functions
+        function saveToStorage(key, data) {
+            if (key === 'creditCalculatorResults') {
+                savedResults = data;
+            }
+        }
+
+        function loadFromStorage(key) {
+            if (key === 'creditCalculatorResults') {
+                return savedResults;
+            }
+            return [];
+        }
+
+        function clearStorage(key) {
+            if (key === 'creditCalculatorResults') {
+                savedResults = [];
+            }
+        }
+
+        // Toast notification function
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            // Trigger animation
+            setTimeout(() => toast.classList.add('show'), 100);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Main tab switching
+        function switchMainTab(tabName) {
+            document.querySelectorAll('.main-tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.main-tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Credit calculator tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (tabName === 'saved') {
+                loadSavedResults();
+            }
+        }
+
+        // Validation function
+        function validateInput(value, min = 0, max = 100) {
+            const num = parseFloat(value);
+            return !isNaN(num) && num >= min && num <= max;
+        }
+
+        // Enhanced calculation with better error handling
+        function calculateResult(paperDiv, credit) {
+            const subject = paperDiv.querySelector('.subject').value.trim();
+            const a1Input = paperDiv.querySelector('.assessment1');
+            const a2Input = paperDiv.querySelector('.assessment2');
+            const activityInput = paperDiv.querySelector('.activity');
+            const theoryInput = paperDiv.querySelector('.theory');
+            const labInput = paperDiv.querySelector('.lab');
+
+            // Clear previous errors
+            paperDiv.querySelectorAll('.error').forEach(el => el.remove());
+
+            let hasError = false;
+
+            // Validate inputs
+            const inputs = [
+                { input: a1Input, name: 'Assessment 1' },
+                { input: a2Input, name: 'Assessment 2' },
+                { input: activityInput, name: 'Activity' },
+                { input: theoryInput, name: 'Theory' }
+            ];
+
+            if (labInput) {
+                inputs.push({ input: labInput, name: 'Lab' });
+            }
+
+            inputs.forEach(({ input, name }) => {
+                if (!input.value.trim()) {
+                    const error = document.createElement('div');
+                    error.className = 'error';
+                    error.textContent = `${name} is required`;
+                    input.parentNode.appendChild(error);
+                    hasError = true;
+                } else if (!validateInput(input.value)) {
+                    const error = document.createElement('div');
+                    error.className = 'error';
+                    error.textContent = `${name} must be between 0 and 100`;
+                    input.parentNode.appendChild(error);
+                    hasError = true;
+                }
+            });
+
+            if (hasError) {
+                showToast('Please fix the validation errors', 'error');
+                return;
+            }
+
+            const a1 = parseFloat(a1Input.value);
+            const a2 = parseFloat(a2Input.value);
+            const activity = parseFloat(activityInput.value);
+            const theory = parseFloat(theoryInput.value);
+            const lab = labInput ? parseFloat(labInput.value) : 0;
+
+            let internalTotal = 0;
+            let theoryWeight = 0;
+            let total = 0;
+
+            if (credit === '3') {
+                internalTotal = (a1 * 0.3) + (a2 * 0.3) + activity;
+                theoryWeight = 0.6;
+                total = internalTotal + (theory * theoryWeight);
+            } else {
+                internalTotal = (a1 * 0.4) + (a2 * 0.4) + activity + lab;
+                theoryWeight = 0.25;
+                total = internalTotal + (theory * theoryWeight);
+            }
+
+            const resultDiv = paperDiv.querySelector('.result');
+            const isPassing = total >= 50;
+
+            let resultHTML = '';
+            if (subject) {
+                resultHTML += `<div style="font-size: 18px; font-weight: bold; margin-bottom: 15px;">Subject: ${subject}</div>`;
+            }
+
+            resultHTML += `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <div>
+                        <strong>Internal Components:</strong><br>
+                        Assessment 1: ${a1} × ${credit === '3' ? '30%' : '40%'} = ${(a1 * (credit === '3' ? 0.3 : 0.4)).toFixed(2)}<br>
+                        Assessment 2: ${a2} × ${credit === '3' ? '30%' : '40%'} = ${(a2 * (credit === '3' ? 0.3 : 0.4)).toFixed(2)}<br>
+                        Activity: ${activity}<br>
+                        ${labInput ? `Lab: ${lab}<br>` : ''}
+                        <strong>Internal Total: ${internalTotal.toFixed(2)}</strong>
+                    </div>
+                    <div>
+                        <strong>Theory Component:</strong><br>
+                        Theory: ${theory} × ${(theoryWeight * 100).toFixed(0)}% = ${(theory * theoryWeight).toFixed(2)}<br><br>
+                        <strong style="font-size: 18px;">Final Total: ${total.toFixed(2)}</strong>
+                    </div>
+                </div>
+            `;
+
+            if (isPassing) {
+                resultHTML += `<div class="status pass">PASS - Congratulations!</div>`;
+                resultDiv.className = 'result pass';
+                showToast('Calculation completed - PASS!', 'success');
+            } else {
+                const minInternalRequired = Math.max(0, 50 - (theory * theoryWeight));
+                const minTheoryRequired = Math.max(0, (50 - internalTotal) / theoryWeight);
+
+                resultHTML += `
+                    <div class="status fail"> FAIL - Need Improvement</div>
+                    <div style="margin-top: 15px; padding: 15px; background: rgba(220, 53, 69, 0.1); border-radius: 8px;">
+                        <strong>To Pass (50 marks minimum):</strong><br>
+                        Minimum Internal Marks Required: ${minInternalRequired.toFixed(2)}<br>
+                        Minimum Theory Marks Required: ${minTheoryRequired.toFixed(2)}
+                    </div>
+                `;
+                resultDiv.className = 'result fail';
+                showToast('Calculation completed - Review required', 'error');
+            }
+
+            resultDiv.innerHTML = resultHTML;
+
+            // Store result data for saving
+            const resultData = {
+                subject,
+                a1,
+                a2,
+                activity,
+                theory,
+                lab,
+                internalTotal,
+                theoryWeight,
+                total,
+                isPassing
+            };
+
+            // Enable save button functionality
+            const saveBtn = paperDiv.querySelector('.btn-save');
+            if (saveBtn) {
+                saveBtn.disabled = false;
+                saveBtn.onclick = () => saveResult(paperDiv, credit, resultData);
+            }
+        }
+
+        // Save result function
+        function saveResult(paperDiv, credit, resultData) {
+            const subject = paperDiv.querySelector('.subject').value.trim() || 'Untitled Paper';
+            const savedData = loadFromStorage('creditCalculatorResults');
+            
+            const newResult = {
+                id: Date.now(),
+                subject: subject,
+                credit: credit,
+                date: new Date().toLocaleDateString(),
+                time: new Date().toLocaleTimeString(),
+                data: resultData,
+                resultHTML: paperDiv.querySelector('.result').innerHTML
+            };
+            
+            savedData.push(newResult);
+            saveToStorage('creditCalculatorResults', savedData);
+            showToast('Result saved successfully! ', 'success');
+        }
+
+        // Load saved results function
+        function loadSavedResults() {
+            const savedData = loadFromStorage('creditCalculatorResults');
+            const container = document.getElementById('saved-results');
+            
+            if (savedData.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No saved results found.</p>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            savedData.reverse().forEach(result => {
+                const savedDiv = document.createElement('div');
+                savedDiv.className = 'saved-result';
+                
+                savedDiv.innerHTML = `
+                    <h4> ${result.subject} (${result.credit} Credits)</h4>
+                    <div class="saved-date"> Saved on ${result.date} at ${result.time}</div>
+                    <div class="saved-content">${result.resultHTML}</div>
+                    <div style="margin-top: 15px;">
+                        <button class="btn btn-delete" onclick="deleteSavedResult(${result.id})"> Delete</button>
+                        <button class="btn btn-pdf" onclick="exportSavedResultToPDF(${result.id})"> Export PDF</button>
+                    </div>
+                `;
+                
+                container.appendChild(savedDiv);
+            });
+        }
+
+        // Delete saved result function
+        function deleteSavedResult(id) {
+            if (confirm('Are you sure you want to delete this saved result?')) {
+                const savedData = loadFromStorage('creditCalculatorResults');
+                const filteredData = savedData.filter(result => result.id !== id);
+                saveToStorage('creditCalculatorResults', filteredData);
+                loadSavedResults();
+                // Delete saved result function (continued)
+        showToast('Result deleted successfully! ', 'info');
+            }
+        }
+
+        // Clear all results function
+        function clearAllResults() {
+            if (confirm('Are you sure you want to delete ALL saved results? This action cannot be undone.')) {
+                clearStorage('creditCalculatorResults');
+                loadSavedResults();
+                showToast('All results cleared! ', 'info');
+            }
+        }
+
+        // Export saved result to PDF
+        function exportSavedResultToPDF(id) {
+            const savedData = loadFromStorage('creditCalculatorResults');
+            const result = savedData.find(r => r.id === id);
+            
+            if (!result) return;
+            
+            const element = document.createElement('div');
+            element.innerHTML = `
+                <div style="font-family: Arial, sans-serif; padding: 20px;">
+                    <h1 style="color: #667eea; text-align: center;">🎓 Academic Calculator Result</h1>
+                    <h2>${result.subject} (${result.credit} Credits)</h2>
+                    <p><strong>Date:</strong> ${result.date} at ${result.time}</p>
+                    <hr>
+                    ${result.resultHTML}
+                </div>
+            `;
+            
+            const opt = {
+                margin: 1,
+                filename: `${result.subject.replace(/[^a-z0-9]/gi, '_')}_result.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            
+            html2pdf().set(opt).from(element).save();
+            showToast('PDF export started! ', 'success');
+        }
+
+        // Reset paper function
+        function resetPaper(paperDiv) {
+            if (confirm('Are you sure you want to reset this paper?')) {
+                paperDiv.querySelectorAll('input').forEach(input => {
+                    if (input.type === 'text' || input.type === 'number') {
+                        input.value = '';
+                    }
+                });
+                paperDiv.querySelector('.result').innerHTML = '';
+                paperDiv.querySelector('.result').className = 'result';
+                paperDiv.querySelector('.btn-save').disabled = true;
+                paperDiv.querySelectorAll('.error').forEach(el => el.remove());
+                showToast('Paper reset successfully! ', 'info');
+            }
+        }
+
+        // Delete paper function
+        function deletePaper(paperDiv, credit) {
+            const papersContainer = document.getElementById(`papers-${credit}`);
+            const paperCount = papersContainer.children.length;
+            
+            if (paperCount <= 1) {
+                showToast('Cannot delete the last paper! Add another paper first.', 'error');
+                return;
+            }
+            
+            if (confirm('Are you sure you want to delete this paper?')) {
+                paperDiv.remove();
+                showToast('Paper deleted successfully! ', 'info');
+            }
+        }
+
+        // Add paper function
+        function addPaper(credit) {
+            const papersContainer = document.getElementById(`papers-${credit}`);
+            const paperDiv = createPaperDiv(credit);
+            papersContainer.appendChild(paperDiv);
+            showToast('New paper added! ', 'success');
+            
+            // Scroll to new paper
+            paperDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // Create paper div function
+        function createPaperDiv(credit) {
+            const paperDiv = document.createElement('div');
+            paperDiv.className = 'paper';
+            
+            let labField = '';
+            if (credit === '4' || credit === '4.5') {
+                labField = `
+                    <div class="form-group">
+                        <label for="lab">Lab Marks (0-100):</label>
+                        <input type="number" class="lab" min="0" max="100" placeholder="Enter lab marks">
+                    </div>
+                `;
+            }
+            
+            paperDiv.innerHTML = `
+                <div class="form-group">
+                    <label for="subject">Subject Name (Optional):</label>
+                    <input type="text" class="subject" placeholder="Enter subject name">
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-group">
+                        <label for="assessment1">Assessment 1 (0-50):</label>
+                        <input type="number" class="assessment1" min="0" max="50" placeholder="Enter A1 marks">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="assessment2">Assessment 2 (0-50):</label>
+                        <input type="number" class="assessment2" min="0" max="50" placeholder="Enter A2 marks">
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-group">
+                        <label for="activity">Activity Marks (0-10):</label>
+                        <input type="number" class="activity" min="0" max="100" placeholder="Enter activity marks">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="theory">Theory Marks (0-100):</label>
+                        <input type="number" class="theory" min="0" max="100" placeholder="Enter theory marks">
+                    </div>
+                </div>
+                
+                ${labField}
+                
+                <div class="button-group">
+                    <button type="button" class="btn btn-calculate" onclick="calculateResult(this.closest('.paper'), '${credit}')">
+                         Calculate
+                    </button>
+                    <button type="button" class="btn btn-save" onclick="alert('Calculate first to enable save')" disabled>
+                         Save Result
+                    </button>
+                    <button type="button" class="btn btn-reset" onclick="resetPaper(this.closest('.paper'))">
+                         Reset
+                    </button>
+                    <button type="button" class="btn btn-delete" onclick="deletePaper(this.closest('.paper'), '${credit}')">
+                         Delete Paper
+                    </button>
+                </div>
+                
+                <div class="result"></div>
+            `;
+            
+            return paperDiv;
+        }
+
+        // CGPA Calculator Functions
+        function generateSubjectInputs() {
+            const numSubjects = parseInt(document.getElementById('num-subjects').value);
+            const form = document.getElementById('subjects-form');
+            
+            if (numSubjects < 1 || numSubjects > 20) {
+                showToast('Number of subjects must be between 1 and 20', 'error');
+                return;
+            }
+            
+            form.innerHTML = '';
+            
+            for (let i = 1; i <= numSubjects; i++) {
+                const subjectRow = document.createElement('div');
+                subjectRow.className = 'subject-row';
+                
+                subjectRow.innerHTML = `
+                    <div class="form-group">
+                        <label>Subject ${i}:</label>
+                        <input type="text" placeholder="Subject name (optional)" class="subject-name">
+                    </div>
+                    <div class="form-group">
+                        <label>Credits:</label>
+                        <input type="number" min="1" max="6" value="3" class="credits" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Grade:</label>
+                        <select class="grade" required>
+                            <option value="">Select Grade</option>
+                            <option value="O">O (10 points)</option>
+                            <option value="A+">A+ (9 points)</option>
+                            <option value="A">A (8 points)</option>
+                            <option value="B+">B+ (7 points)</option>
+                            <option value="B">B (6 points)</option>
+                            <option value="C">C (5 points)</option>
+                            <option value="F">F (0 points)</option>
+                        </select>
+                    </div>
+                `;
+                
+                form.appendChild(subjectRow);
+            }
+            
+            showToast(`Generated inputs for ${numSubjects} subjects!`, 'success');
+        }
+
+        function calculateCGPA() {
+            const subjectRows = document.querySelectorAll('.subject-row');
+            let totalCredits = 0;
+            let totalGradePoints = 0;
+            let hasError = false;
+            
+            // Clear previous errors
+            document.querySelectorAll('.error').forEach(el => el.remove());
+            
+            subjectRows.forEach((row, index) => {
+                const creditsInput = row.querySelector('.credits');
+                const gradeSelect = row.querySelector('.grade');
+                
+                const credits = parseInt(creditsInput.value);
+                const grade = gradeSelect.value;
+                
+                if (!credits || credits < 1 || credits > 6) {
+                    const error = document.createElement('div');
+                    error.className = 'error';
+                    error.textContent = 'Credits must be between 1 and 6';
+                    creditsInput.parentNode.appendChild(error);
+                    hasError = true;
+                }
+                
+                if (!grade) {
+                    const error = document.createElement('div');
+                    error.className = 'error';
+                    error.textContent = 'Please select a grade';
+                    gradeSelect.parentNode.appendChild(error);
+                    hasError = true;
+                }
+                
+                if (!hasError && credits && grade) {
+                    const gradePoints = gradeMap[grade];
+                    totalCredits += credits;
+                    totalGradePoints += credits * gradePoints;
+                }
+            });
+            
+            if (hasError) {
+                showToast('Please fix the validation errors', 'error');
+                return;
+            }
+            
+            if (totalCredits === 0) {
+                showToast('No valid subjects found', 'error');
+                return;
+            }
+            
+            const cgpa = totalGradePoints / totalCredits;
+            const resultDiv = document.getElementById('cgpa-result');
+            
+            let performance = '';
+            if (cgpa >= 9) performance = 'Outstanding! 🏆';
+            else if (cgpa >= 8) performance = 'Excellent! 🌟';
+            else if (cgpa >= 7) performance = 'Very Good! ';
+            else if (cgpa >= 6) performance = 'Good! ';
+            else if (cgpa >= 5) performance = 'Average ';
+            else performance = 'Needs Improvement ';
+            
+            resultDiv.innerHTML = `
+                <h3> CGPA Calculation Result</h3>
+                <div style="font-size: 24px; margin: 20px 0;">
+                    <strong>Your CGPA: ${cgpa.toFixed(2)}</strong>
+                </div>
+                <div style="font-size: 18px; margin: 15px 0;">
+                    ${performance}
+                </div>
+                <div style="margin-top: 20px; font-size: 16px;">
+                    <strong>Summary:</strong><br>
+                    Total Credits: ${totalCredits}<br>
+                    Total Grade Points: ${totalGradePoints}<br>
+                    CGPA: ${totalGradePoints} ÷ ${totalCredits} = ${cgpa.toFixed(2)}
+                </div>
+            `;
+            
+            resultDiv.style.display = 'block';
+            showToast('CGPA calculated successfully! ', 'success');
+            
+            // Scroll to result
+            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // Scroll to top function
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Initialize the application
+        function initializeApp() {
+            // Add initial papers for each credit type
+            addPaper('3');
+            addPaper('4');
+            addPaper('4.5');
+            
+            // Set up CGPA calculator event listeners
+            document.getElementById('generate-inputs').addEventListener('click', generateSubjectInputs);
+            document.getElementById('calculate-cgpa').addEventListener('click', calculateCGPA);
+            
+            // Generate initial CGPA inputs
+            generateSubjectInputs();
+            
+            // Show welcome message
+            setTimeout(() => {
+                showToast('Welcome to Ultimate Academic Calculator! ', 'success');
+            }, 500);
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initializeApp);
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + S to save (prevent default)
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                showToast('Use the Save Result button to save calculations! ', 'info');
+            }
+            
+            // Escape key to clear focus
+            if (e.key === 'Escape') {
+                document.activeElement.blur();
+            }
+        });
+
+        // Add smooth animations on scroll
+        window.addEventListener('scroll', function() {
+            const fab = document.querySelector('.fab');
+            if (window.scrollY > 300) {
+                fab.style.opacity = '1';
+                fab.style.transform = 'scale(1)';
+            } else {
+                fab.style.opacity = '0.7';
+                fab.style.transform = 'scale(0.8)';
+            }
+        });
+    </script>
+</body>
+</html>

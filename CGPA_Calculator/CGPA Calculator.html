@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CGPA Calculator (Letter Grades)</title>
+
+
+<style>
+  /* Improved styles.css */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 20px;
+  background-color: #f9fafb;
+  color: #333;
+}
+
+label {
+  display: inline-block;
+  width: 130px;  /* Slightly wider for better alignment */
+  margin-top: 10px;
+  font-weight: 600;
+  color: #444;
+}
+
+input,
+select {
+  padding: 8px 10px;
+  margin-top: 6px;
+  margin-bottom: 16px;
+  width: 170px;
+  border: 1.8px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  background-color: #fff;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+
+input:focus,
+select:focus {
+  border-color: #007BFF;
+  box-shadow: 0 0 6px #007BFF;
+  outline: none;
+  background-color: #fff;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #007BFF, #0056b3);
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 4px 8px rgba(0,123,255,0.4);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+  user-select: none;
+}
+
+button:hover {
+  background: linear-gradient(135deg, #0056b3, #003f7f);
+  box-shadow: 0 6px 12px rgba(0,86,179,0.6);
+}
+
+button:active {
+  background: #004080;
+  box-shadow: 0 2px 5px rgba(0,64,128,0.8);
+  transform: translateY(1px);
+}
+
+.result {
+  margin-top: 20px;
+  font-weight: 700;
+  white-space: pre-line;
+  background: #e9f0ff;
+  padding: 15px 20px;
+  border-radius: 10px;
+  border: 1px solid #aac6ff;
+  color: #003366;
+  box-shadow: inset 0 0 5px rgba(0,102,204,0.2);
+  max-width: 350px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  label, input, select {
+    display: block;
+    width: 100%;
+  }
+  
+  label {
+    margin-bottom: 6px;
+  }
+
+  input,
+  select {
+    margin-bottom: 20px;
+  }
+  
+  button {
+    width: 100%;
+  }
+  
+  .result {
+    max-width: 100%;
+  }
+}
+
+</style>
+</head>
+<body>
+
+<h2>CGPA Calculator (Using Letter Grades)</h2>
+
+<label for="num-subjects">Number of Subjects:</label>
+<input type="number" id="num-subjects" min="1" max="20" value="3" />
+<button id="generate-inputs">Generate Inputs</button>
+
+<form id="subjects-form" style="margin-top: 15px;"></form>
+
+<button id="calculate-cgpa" style="margin-top: 10px;">Calculate CGPA</button>
+
+<div id="cgpa-result" class="result"></div>
+
+<script>
+  // Map letter grade to grade point value
+  const gradeMap = {
+    'O': 10,
+    'A+': 9,
+    'A': 8,
+    'B+': 7,
+    'B': 6,
+    'C': 5,
+    'F': 0
+  };
+
+  const generateBtn = document.getElementById("generate-inputs");
+  const form = document.getElementById("subjects-form");
+  const calculateBtn = document.getElementById("calculate-cgpa");
+  const resultDiv = document.getElementById("cgpa-result");
+
+  generateBtn.addEventListener("click", () => {
+    const n = parseInt(document.getElementById("num-subjects").value);
+    if (isNaN(n) || n < 1 || n > 20) {
+      alert("Enter number of subjects between 1 and 20");
+      return;
+    }
+
+    form.innerHTML = "";
+
+    for (let i = 1; i <= n; i++) {
+      const div = document.createElement("div");
+
+      div.innerHTML = `
+        <label>Subject ${i} Grade:</label>
+        <select class="grade-select" required>
+          <option value="">Select grade</option>
+          <option value="O">O</option>
+          <option value="A+">A+</option>
+          <option value="A">A</option>
+          <option value="B+">B+</option>
+          <option value="B">B</option>
+          <option value="C">C</option>
+          <option value="F">F</option>
+        </select><br/>
+        <label>Subject ${i} Credits:</label>
+        <input type="number" class="credit-input" min="0.5" step="0.5" required />
+        <br/><br/>
+      `;
+
+      form.appendChild(div);
+    }
+  });
+
+  calculateBtn.addEventListener("click", () => {
+    const grades = form.querySelectorAll(".grade-select");
+    const credits = form.querySelectorAll(".credit-input");
+
+    if (grades.length === 0) {
+      alert("Generate subject inputs first");
+      return;
+    }
+
+    let totalPoints = 0;
+    let totalCredits = 0;
+
+    for (let i = 0; i < grades.length; i++) {
+      const grade = grades[i].value;
+      const credit = parseFloat(credits[i].value);
+
+      if (!grade || !(grade in gradeMap)) {
+        alert(`Select a valid grade for Subject ${i + 1}`);
+        return;
+      }
+
+      if (isNaN(credit) || credit <= 0) {
+        alert(`Enter valid credits (>0) for Subject ${i + 1}`);
+        return;
+      }
+
+      const gp = gradeMap[grade];
+      totalPoints += gp * credit;
+      totalCredits += credit;
+    }
+
+    if (totalCredits === 0) {
+      resultDiv.textContent = "Total credits cannot be zero.";
+      return;
+    }
+
+    const cgpa = totalPoints / totalCredits;
+
+    // Get overall letter grade from CGPA
+    let overallGrade = "F";
+    if (cgpa >= 9) overallGrade = "O";
+    else if (cgpa >= 8) overallGrade = "A+";
+    else if (cgpa >= 7) overallGrade = "A";
+    else if (cgpa >= 6) overallGrade = "B+";
+    else if (cgpa >= 5) overallGrade = "B";
+    else if (cgpa >= 4) overallGrade = "C";
+
+    resultDiv.textContent = `Your CGPA is: ${cgpa.toFixed(2)}\nOverall Grade: ${overallGrade}`;
+  });
+</script>
+
+</body>
+</html>
