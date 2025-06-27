@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Advanced Credit Paper Calculator</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+    }
+
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 40px;
+      font-size: 2.5rem;
+      font-weight: 700;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .section {
+      margin-bottom: 40px;
+      padding: 25px;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .section h3 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+      font-size: 1.8rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section h3::before {
+      content: "📚";
+      font-size: 1.5rem;
+    }
+
+    .add-btn {
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 25px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+      margin-bottom: 20px;
+    }
+
+    .add-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    .add-btn:active {
+      transform: translateY(0);
+    }
+
+    .paper {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e1e8ed;
+      position: relative;
+      overflow: hidden;
+      animation: slideIn 0.5s ease-out;
+    }
+
+    .paper::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-group label {
+      font-weight: 600;
+      color: #2c3e50;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .form-group input {
+      padding: 12px 16px;
+      border: 2px solid #e1e8ed;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .form-group input:invalid {
+      border-color: #e74c3c;
+    }
+
+    .form-group input:valid {
+      border-color: #27ae60;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 25px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-calculate {
+      background: linear-gradient(45deg, #27ae60, #2ecc71);
+      color: white;
+      box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+    }
+
+    .btn-calculate:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+    }
+
+    .btn-reset {
+      background: linear-gradient(45deg, #f39c12, #e67e22);
+      color: white;
+      box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+    }
+
+    .btn-reset:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(243, 156, 18, 0.4);
+    }
+
+    .btn-delete {
+      background: linear-gradient(45deg, #e74c3c, #c0392b);
+      color: white;
+      box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+    }
+
+    .btn-delete:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+    }
+
+    .btn-pdf {
+      background: linear-gradient(45deg, #9b59b6, #8e44ad);
+      color: white;
+      box-shadow: 0 4px 15px rgba(155, 89, 182, 0.3);
+    }
+
+    .btn-pdf:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(155, 89, 182, 0.4);
+    }
+
+    .result {
+      margin-top: 25px;
+      padding: 20px;
+      border-radius: 12px;
+      font-size: 16px;
+      line-height: 1.6;
+      animation: fadeIn 0.5s ease-out;
+      border-left: 4px solid #667eea;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .result.pass {
+      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+      border-left-color: #28a745;
+      color: #155724;
+    }
+
+    .result.fail {
+      background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+      border-left-color: #dc3545;
+      color: #721c24;
+    }
+
+    .status {
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .status.pass {
+      background: rgba(40, 167, 69, 0.1);
+      color: #28a745;
+      border: 2px solid #28a745;
+    }
+
+    .status.fail {
+      background: rgba(220, 53, 69, 0.1);
+      color: #dc3545;
+      border: 2px solid #dc3545;
+    }
+
+    .export-all-btn {
+      display: block;
+      margin: 40px auto;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      padding: 15px 40px;
+      border-radius: 30px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .export-all-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+    }
+
+    .error {
+      color: #e74c3c;
+      font-size: 14px;
+      margin-top: 5px;
+      font-weight: 500;
+    }
+
+    .success {
+      color: #27ae60;
+      font-size: 14px;
+      margin-top: 5px;
+      font-weight: 500;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-left: 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+        margin: 10px;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .section {
+        padding: 20px;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+
+    /* Toast Notifications */
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #333;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      z-index: 1000;
+      animation: slideInRight 0.3s ease-out;
+    }
+
+    .toast.success {
+      background: #27ae60;
+    }
+
+    .toast.error {
+      background: #e74c3c;
+    }
+
+    @keyframes slideInRight {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎓 Advanced Credit Paper Calculator</h1>
+
+    <!-- 4.5 Credit Papers Section -->
+    <div class="section">
+      <h3>4.5 Credit Papers</h3>
+      <button class="add-btn" id="add-4-5-credit">➕ Add 4.5 Credit Paper</button>
+      <div id="papers-4.5"></div>
+    </div>
+
+    <!-- 4 Credit Papers Section -->
+    <div class="section">
+      <h3>4 Credit Papers</h3>
+      <button class="add-btn" id="add-4-credit">➕ Add 4 Credit Paper</button>
+      <div id="papers-4"></div>
+    </div>
+
+    <!-- 3 Credit Papers Section -->
+    <div class="section">
+      <h3>3 Credit Papers</h3>
+      <button class="add-btn" id="add-3-credit">➕ Add 3 Credit Paper</button>
+      <div id="papers-3"></div>
+    </div>
+
+    <button class="export-all-btn" id="export-all">📄 Export All Results to PDF</button>
+  </div>
+
+  <!-- Include html2pdf library CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  
+  <script>
+    // Toast notification function
+    function showToast(message, type = 'info') {
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
+    }
+
+    // Validation function
+    function validateInput(value, min = 0, max = 100) {
+      const num = parseFloat(value);
+      return !isNaN(num) && num >= min && num <= max;
+    }
+
+    // Enhanced calculation with better error handling
+    function calculateResult(paperDiv, credit) {
+      const subject = paperDiv.querySelector('.subject').value.trim();
+      const a1Input = paperDiv.querySelector('.assessment1');
+      const a2Input = paperDiv.querySelector('.assessment2');
+      const activityInput = paperDiv.querySelector('.activity');
+      const theoryInput = paperDiv.querySelector('.theory');
+      const labInput = paperDiv.querySelector('.lab');
+
+      // Clear previous errors
+      paperDiv.querySelectorAll('.error').forEach(el => el.remove());
+
+      let hasError = false;
+
+      // Validate inputs
+      const inputs = [
+        { input: a1Input, name: 'Assessment 1' },
+        { input: a2Input, name: 'Assessment 2' },
+        { input: activityInput, name: 'Activity' },
+        { input: theoryInput, name: 'Theory' }
+      ];
+
+      if (labInput) {
+        inputs.push({ input: labInput, name: 'Lab' });
+      }
+
+      inputs.forEach(({ input, name }) => {
+        if (!input.value.trim()) {
+          const error = document.createElement('div');
+          error.className = 'error';
+          error.textContent = `${name} is required`;
+          input.parentNode.appendChild(error);
+          hasError = true;
+        } else if (!validateInput(input.value)) {
+          const error = document.createElement('div');
+          error.className = 'error';
+          error.textContent = `${name} must be between 0 and 100`;
+          input.parentNode.appendChild(error);
+          hasError = true;
+        }
+      });
+
+      if (hasError) {
+        showToast('Please fix the validation errors', 'error');
+        return;
+      }
+
+      const a1 = parseFloat(a1Input.value);
+      const a2 = parseFloat(a2Input.value);
+      const activity = parseFloat(activityInput.value);
+      const theory = parseFloat(theoryInput.value);
+      const lab = labInput ? parseFloat(labInput.value) : 0;
+
+      let internalTotal = 0;
+      let theoryWeight = 0;
+      let total = 0;
+
+      if (credit === '3') {
+        internalTotal = (a1 * 0.3) + (a2 * 0.3) + activity;
+        theoryWeight = 0.6;
+        total = internalTotal + (theory * theoryWeight);
+      } else {
+        internalTotal = (a1 * 0.4) + (a2 * 0.4) + activity + lab;
+        theoryWeight = 0.25;
+        total = internalTotal + (theory * theoryWeight);
+      }
+
+      const resultDiv = paperDiv.querySelector('.result');
+      const isPassing = total >= 50;
+
+      let resultHTML = '';
+      if (subject) {
+        resultHTML += `<div style="font-size: 18px; font-weight: bold; margin-bottom: 15px;">📚 Subject: ${subject}</div>`;
+      }
+
+      resultHTML += `
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+          <div>
+            <strong>Internal Components:</strong><br>
+            Assessment 1: ${a1} × ${credit === '3' ? '30%' : '40%'} = ${(a1 * (credit === '3' ? 0.3 : 0.4)).toFixed(2)}<br>
+            Assessment 2: ${a2} × ${credit === '3' ? '30%' : '40%'} = ${(a2 * (credit === '3' ? 0.3 : 0.4)).toFixed(2)}<br>
+            Activity: ${activity}<br>
+            ${labInput ? `Lab: ${lab}<br>` : ''}
+            <strong>Internal Total: ${internalTotal.toFixed(2)}</strong>
+          </div>
+          <div>
+            <strong>Theory Component:</strong><br>
+            Theory: ${theory} × ${(theoryWeight * 100).toFixed(0)}% = ${(theory * theoryWeight).toFixed(2)}<br><br>
+            <strong style="font-size: 18px;">Final Total: ${total.toFixed(2)}</strong>
+          </div>
+        </div>
+      `;
+
+      if (isPassing) {
+        resultHTML += `<div class="status pass">✅ PASS - Congratulations!</div>`;
+        resultDiv.className = 'result pass';
+        showToast('Calculation completed - PASS!', 'success');
+      } else {
+        const minInternalRequired = Math.max(0, 50 - (theory * theoryWeight));
+        const minTheoryRequired = Math.max(0, (50 - internalTotal) / theoryWeight);
+
+        resultHTML += `
+          <div class="status fail">❌ FAIL - Need Improvement</div>
+          <div style="margin-top: 15px; padding: 15px; background: rgba(220, 53, 69, 0.1); border-radius: 8px;">
+            <strong>To Pass (50 marks minimum):</strong><br>
+            Minimum Internal Marks Required: ${minInternalRequired.toFixed(2)}<br>
+            Minimum Theory Marks Required: ${minTheoryRequired.toFixed(2)}
+          </div>
+        `;
+        resultDiv.className = 'result fail';
+        showToast('Calculation completed - Review required', 'error');
+      }
+
+      resultDiv.innerHTML = resultHTML;
+    }
+
+    function addPaper(credit) {
+      const container = document.getElementById(`papers-${credit}`);
+      const paperDiv = document.createElement('div');
+      paperDiv.classList.add("paper");
+
+      let html = `
+        <div class="form-group">
+          <label>📝 Subject Name (Optional):</label>
+          <input type="text" class="subject" placeholder="Enter subject name">
+        </div>
+
+        <div class="form-group">
+          <label>📊 Assessment 1:</label>
+          <input type="number" class="assessment1" min="0" max="100" placeholder="Enter marks (0-100)" required>
+        </div>
+
+        <div class="form-group">
+          <label>📊 Assessment 2:</label>
+          <input type="number" class="assessment2" min="0" max="100" placeholder="Enter marks (0-100)" required>
+        </div>
+
+        <div class="form-group">
+          <label>🎯 Activity:</label>
+          <input type="number" class="activity" min="0" max="100" placeholder="Enter marks (0-100)" required>
+        </div>
+
+        <div class="form-group">
+          <label>📚 Theory:</label>
+          <input type="number" class="theory" min="0" max="100" placeholder="Enter marks (0-100)" required>
+        </div>
+      `;
+
+      if (credit === '4' || credit === '4.5') {
+        html += `
+          <div class="form-group">
+            <label>🔬 Lab:</label>
+            <input type="number" class="lab" min="0" max="100" placeholder="Enter marks (0-100)" required>
+          </div>
+        `;
+      }
+
+      html += `
+        <div class="button-group">
+          <button class="btn btn-calculate" type="button">🧮 Calculate</button>
+          <button class="btn btn-reset" type="button">🔄 Reset</button>
+          <button class="btn btn-delete" type="button">🗑️ Delete</button>
+          <button class="btn btn-pdf" type="button">📄 Export PDF</button>
+        </div>
+        <div class="result"></div>
+      `;
+
+      paperDiv.innerHTML = html;
+      container.appendChild(paperDiv);
+
+      // Event Listeners
+      const calculateBtn = paperDiv.querySelector('.btn-calculate');
+      const resetBtn = paperDiv.querySelector('.btn-reset');
+      const deleteBtn = paperDiv.querySelector('.btn-delete');
+      const pdfBtn = paperDiv.querySelector('.btn-pdf');
+      const resultDiv = paperDiv.querySelector('.result');
+
+      calculateBtn.addEventListener('click', () => {
+        calculateBtn.innerHTML = '🧮 Calculating<span class="loading"></span>';
+        setTimeout(() => {
+          calculateResult(paperDiv, credit);
+          calculateBtn.innerHTML = '🧮 Calculate';
+        }, 500);
+      });
+
+      resetBtn.addEventListener('click', () => {
+        paperDiv.querySelectorAll('input').forEach(input => input.value = '');
+        paperDiv.querySelectorAll('.error').forEach(el => el.remove());
+        resultDiv.innerHTML = '';
+        resultDiv.className = 'result';
+        showToast('Form reset successfully', 'success');
+      });
+
+      deleteBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to delete this paper?')) {
+          paperDiv.style.animation = 'fadeOut 0.3s ease-out';
+          setTimeout(() => paperDiv.remove(), 300);
+          showToast('Paper deleted successfully', 'success');
+        }
+      });
+
+      pdfBtn.addEventListener('click', () => {
+        if (resultDiv.textContent.trim() === '') {
+          showToast('Please calculate the result before exporting to PDF', 'error');
+          return;
+        }
+
+        const subject = paperDiv.querySelector('.subject').value.trim() || 'Paper_Result';
+        const pdfContent = document.createElement('div');
+        pdfContent.style.cssText = `
+          padding: 30px;
+          font-family: Arial, sans-serif;
+          max-width: 800px;
+          margin: 0 auto;
+          background: white;
+        `;
+        
+        pdfContent.innerHTML = `
+          <div style="text-align: center; margin-bottom: 30px;">
+            <h1 style="color: #2c3e50; margin-bottom: 10px;">🎓 Academic Result Report</h1>
+            <h2 style="color: #667eea;">${subject}</h2>
+            <p style="color: #666; margin-top: 10px;">Generated on ${new Date().toLocaleDateString()}</p>
+          </div>
+          <div style="border: 2px solid #667eea; border-radius: 10px; padding: 20px;">
+            ${resultDiv.innerHTML}
+          </div>
+        `;
+
+        pdfBtn.innerHTML = '📄 Generating PDF<span class="loading"></span>';
+        
+        html2pdf()
+          .set({
+            margin: 1,
+            filename: `${subject.replace(/\s+/g, '_')}_Result.pdf`,
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+          })
+          .from(pdfContent)
+          .save()
+          .then(() => {
+            pdfBtn.innerHTML = '📄 Export PDF';
+            showToast('PDF exported successfully!', 'success');
+          })
+          .catch(() => {
+            pdfBtn.innerHTML = '📄 Export PDF';
+            showToast('Failed to export PDF', 'error');
+          });
+      });
+
+      // Add CSS animation for fade out
+      if (!document.querySelector('#fadeOutStyle')) {
+        const style = document.createElement('style');
+        style.id = 'fadeOutStyle';
+        style.textContent = `
+          @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-20px); }
+          }
+        `;
+        document.head.appendChild(style);
+      }
+
+      showToast(`${credit} credit paper added successfully!`, 'success');
+    }
+
+    // Add paper buttons event listeners
+    document.getElementById('add-4-5-credit').addEventListener('click', () => addPaper('4.5'));
+    document.getElementById('add-4-credit').addEventListener('click', () => addPaper('4'));
+    document.getElementById('add-3-credit').addEventListener('click', () => addPaper('3'));
+
+    // Export all results button
+    document.getElementById('export-all').addEventListener('click', () => {
+      const allPapers = document.querySelectorAll('.paper');
+      if (allPapers.length === 0) {
+        showToast('No papers to export', 'error');
+        return;
+      }
+
+      const exportBtn = document.getElementById('export-all');
+      const allResultsDiv = document.createElement('div');
+      allResultsDiv.style.cssText = `
+        padding: 30px;
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+      `;
+
+      let hasResults = false;
+      let htmlContent = `
+        <div style="text-align: center; margin-bottom: 40px;">
+          <h1 style="color: #2c3e50; margin-bottom: 10px;">🎓 Complete Academic Report</h1>
+          <p style="color: #666; margin-top: 10px;">Generated on ${new Date().toLocaleDateString()}</p>
+          <hr style="margin: 20px 0; border: 1px solid #667eea;">
+        </div>
+      `;
+
+      allPapers.forEach((paper, index) => {
+        const resultDiv = paper.querySelector('.result');
+        if (resultDiv && resultDiv.textContent.trim() !== '') {
+          hasResults = true;
+          const subject = paper.querySelector('.subject').value.trim() || `Paper ${index + 1}`;
+          htmlContent += `
+            <div style="margin-bottom: 40px; padding: 20px; border: 2px solid #667eea; border-radius: 10px;">
+              <h2 style="color: #667eea; margin-bottom: 20px;">${subject}</h2>
+              ${resultDiv.innerHTML}
+            </div>
+          `;
+        }
+      });
+
+      if (!hasResults) {
+        showToast('Please calculate results for papers before exporting all', 'error');
+        return;
+      }
+
+      allResultsDiv.innerHTML = htmlContent;
+
+      exportBtn.innerHTML = '📄 Generating PDF<span class="loading"></span>';
+
+      html2pdf()
+        .set({
+          margin: 1,
+          filename: 'Complete_Academic_Report.pdf',
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+        })
+        .from(allResultsDiv)
+        .save()
+        .then(() => {
+          exportBtn.innerHTML = '📄 Export All Results to PDF';
+          showToast('All results exported successfully!', 'success');
+        })
+        .catch(() => {
+          exportBtn.innerHTML = '📄 Export All Results to PDF';
+          showToast('Failed to export PDF', 'error');
+        });
+    });
+
+    // Add welcome message
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        showToast('Welcome to Advanced Credit Paper Calculator! 🎓', 'success');
+      }, 1000);
+    });
+  </script>
+</body>
+</html>
