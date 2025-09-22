@@ -1,0 +1,52 @@
+/* The main container for each to-do list item */
+.todo-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+  border-bottom: 1px solid #f0f0f0;
+  list-style-type: none; /* Removes the default bullet point */
+  transition: background-color 0.2s ease;
+}
+
+.todo-item:hover {
+  background-color: #fafafa;
+}
+
+/* Styles for the checkbox */
+.todo-item input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  margin-right: 15px; /* Adds space between the checkbox and the text */
+  cursor: pointer;
+}
+
+/* Styles for the text of the to-do item */
+.todo-item span {
+  flex-grow: 1; /* Allows the text to take up all available space */
+  font-size: 1.1rem;
+  color: #444;
+}
+
+/* Styles for the delete button */
+.delete-btn {
+  padding: 5px 10px;
+  font-size: 0.9rem;
+  color: #dc3545; /* Red color */
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  cursor: pointer;
+  opacity: 0; /* The button is invisible by default */
+  transition: opacity 0.3s ease, background-color 0.3s ease;
+}
+
+/* Makes the delete button appear when you hover over the list item */
+.todo-item:hover .delete-btn {
+  opacity: 1;
+}
+
+/* Adds a light red background when you hover over the delete button itself */
+.delete-btn:hover {
+  background-color: #fbebee;
+}
